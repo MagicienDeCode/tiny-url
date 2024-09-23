@@ -1,0 +1,10 @@
+server:
+  port: ${INTERNAL_PORT:10000}
+
+spring:
+  application:
+    name: ${MS_NAME:my-tiny-url}
+  data:
+    redis:
+      host: ${REDIS_URI:localhost}
+      port: ${REDIS_PORT:6379}

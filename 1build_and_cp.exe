@@ -1,0 +1,4 @@
+gradle clean build
+echo "bulid DONE"
+cp build/libs/tinyurl.jar Docker/tinyurl.jar
+echo "cp DONE finished"

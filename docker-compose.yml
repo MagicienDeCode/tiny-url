@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  redis:
+    network_mode: host
+    image: redis/redis-stack:latest
+  pis-psv:
+    network_mode: host
+    depends_on:
+      - redis
+    build: Docker/.
+    environment:
+      - 'INTERNAL_PORT=10000'
+      - 'MS_NAME=my-tiny-url'
+      - 'REDIS_URI=localhost'
+      - 'REDIS_PORT=6379'
+      - 'SPRING_PROFILES_ACTIVE=local'
