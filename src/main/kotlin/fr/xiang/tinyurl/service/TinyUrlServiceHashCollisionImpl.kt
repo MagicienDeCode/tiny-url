@@ -4,6 +4,7 @@ import fr.xiang.tinyurl.application.dto.TinyUrlRequest
 import fr.xiang.tinyurl.application.dto.TinyUrlResDto
 import fr.xiang.tinyurl.repository.TinyUrl
 import fr.xiang.tinyurl.repository.TinyUrlRepository
+import fr.xiang.tinyurl.utils.DateUtils
 import org.springframework.stereotype.Service
 import java.util.Base64
 
@@ -22,7 +23,7 @@ class TinyUrlServiceHashCollisionImpl(
             if (result.isPresent) {
                 continue
             }
-            val tinyUrl = TinyUrl(hash, urlPrefix + hash, tinyUrlRequest.originalUrl)
+            val tinyUrl = TinyUrl(hash, urlPrefix + hash, tinyUrlRequest.originalUrl, DateUtils.nowLong())
             tinyUrlRepository.save(tinyUrl)
             return ServiceResult.Success(tinyUrl.toTinyUrlResDto())
         }
@@ -32,7 +33,7 @@ class TinyUrlServiceHashCollisionImpl(
     override fun getByTinyUrl(shortUrl: String): ServiceResult<TinyUrlResDto> {
         val result = tinyUrlRepository.findById(shortUrl)
         return if (result.isPresent) {
-            ServiceResult.Success(result.get().toTinyUrlResDto())
+            ServiceResult.Success(result.get().toTinyUrlResDtoWithExpiredIn())
         } else {
             ServiceResult.Failure(ServiceException.NOT_FOUND)
         }
