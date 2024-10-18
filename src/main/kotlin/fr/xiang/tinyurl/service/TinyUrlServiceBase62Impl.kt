@@ -6,6 +6,8 @@ import fr.xiang.tinyurl.repository.TinyUrl
 import fr.xiang.tinyurl.repository.TinyUrlRepository
 import fr.xiang.tinyurl.utils.DateUtils
 import org.springframework.stereotype.Service
+import java.util.concurrent.atomic.AtomicLong
+import java.util.function.LongBinaryOperator
 
 @Service
 class TinyUrlServiceBase62Impl(
@@ -13,21 +15,21 @@ class TinyUrlServiceBase62Impl(
 ) : TinyUrlService {
     // should be in env variable
     private val urlPrefix = "https://my-tiny.test/"
+    private final val accumulator = LongBinaryOperator { currentValue, x -> currentValue + x }
 
     init {
-        val total = tinyUrlRepository.findAll().count()
-        atomicLong += 1000 + total
+        val total = tinyUrlRepository.findAll().count().toLong()
+        count.accumulateAndGet(total, accumulator)
     }
 
     companion object {
         // should create a new service to generate cross-server unique id
-        var atomicLong = 0L
+        var count = AtomicLong(0L)
     }
 
     override fun create(tinyUrlRequest: TinyUrlRequest): ServiceResult<TinyUrlResDto> {
         // multi instance, concurrent problems
-        val hash = Base62Converter.encode(atomicLong)
-        atomicLong += 1
+        val hash = Base62Converter.encode(count.accumulateAndGet(1, accumulator))
         val tinyUrl = TinyUrl(hash, urlPrefix + hash, tinyUrlRequest.originalUrl, DateUtils.nowLong())
         tinyUrlRepository.save(tinyUrl)
         return ServiceResult.Success(tinyUrl.toTinyUrlResDto())
