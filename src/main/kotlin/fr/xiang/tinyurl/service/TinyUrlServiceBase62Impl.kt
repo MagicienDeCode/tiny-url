@@ -15,7 +15,6 @@ class TinyUrlServiceBase62Impl(
     private val urlPrefix = "https://my-tiny.test/"
 
     init {
-        // should be a dedicated microservice to generate unique ID
         val total = tinyUrlRepository.findAll().count()
         atomicLong += 1000 + total
     }
