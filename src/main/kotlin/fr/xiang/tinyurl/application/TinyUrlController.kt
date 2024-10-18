@@ -34,11 +34,11 @@ class TinyUrlController(
         }
     }
 
-    @GetMapping("/{shortUrl}")
+    @GetMapping("/{hash}")
     fun redirect(
-        @PathVariable shortUrl: String,
+        @PathVariable hash: String,
     ): Any {
-        return when (val result = tinyUrlService.getByTinyUrl(shortUrl)) {
+        return when (val result = tinyUrlService.getByTinyUrlHash(hash)) {
             is ServiceResult.Success -> ok().body(result.value)
             is ServiceResult.Failure -> badRequest().body(jacksonMapper.writeValueAsString(result.serviceException))
         }

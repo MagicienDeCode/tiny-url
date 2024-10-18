@@ -15,6 +15,7 @@ class TinyUrlServiceBase62Impl(
     private val urlPrefix = "https://my-tiny.test/"
 
     init {
+        // should be a dedicated microservice to generate unique ID
         val total = tinyUrlRepository.findAll().count()
         atomicLong += 1000 + total
     }
@@ -33,8 +34,8 @@ class TinyUrlServiceBase62Impl(
         return ServiceResult.Success(tinyUrl.toTinyUrlResDto())
     }
 
-    override fun getByTinyUrl(shortUrl: String): ServiceResult<TinyUrlResDto> {
-        val result = tinyUrlRepository.findById(shortUrl)
+    override fun getByTinyUrlHash(hash: String): ServiceResult<TinyUrlResDto> {
+        val result = tinyUrlRepository.findById(hash)
         return if (result.isPresent) {
             ServiceResult.Success(result.get().toTinyUrlResDtoWithExpiredIn())
         } else {

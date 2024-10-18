@@ -30,8 +30,8 @@ class TinyUrlServiceHashCollisionImpl(
         return ServiceResult.Failure(ServiceException.CREATION_FAILED)
     }
 
-    override fun getByTinyUrl(shortUrl: String): ServiceResult<TinyUrlResDto> {
-        val result = tinyUrlRepository.findById(shortUrl)
+    override fun getByTinyUrlHash(hash: String): ServiceResult<TinyUrlResDto> {
+        val result = tinyUrlRepository.findById(hash)
         return if (result.isPresent) {
             ServiceResult.Success(result.get().toTinyUrlResDtoWithExpiredIn())
         } else {
