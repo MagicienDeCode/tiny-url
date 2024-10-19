@@ -3,7 +3,7 @@ services:
   redis:
     network_mode: host
     image: redis/redis-stack:latest
-  pis-psv:
+  tiny-url:
     network_mode: host
     depends_on:
       - redis
